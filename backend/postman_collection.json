@@ -1,0 +1,394 @@
+{
+  "info": {
+    "name": "Hotel Booking App - Backend API",
+    "description": "Example requests for every route in the hotel booking backend.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:5000/api" },
+    { "key": "token", "value": "" },
+    { "key": "adminToken", "value": "" },
+    { "key": "hotelId", "value": "" },
+    { "key": "roomId", "value": "" },
+    { "key": "bookingId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register Customer",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Shivam Kumar\",\n  \"email\": \"shivamkmr2211@gmail.com\",\n  \"password\": \"password123\",\n  \"phone\": \"9876543210\",\n  \"address\": \"123 Street\",\n  \"city\": \"Noida\",\n  \"country\": \"India\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login Customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.token) pm.collectionVariables.set('token', json.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"shivamkmr2211@gmail.com\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.token) pm.collectionVariables.set('adminToken', json.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/auth/admin/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@trinitysuites.com\",\n  \"password\": \"ChangeThisPassword123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/auth/profile"
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/auth/profile",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"city\": \"Bangalore\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Hotels",
+      "item": [
+        {
+          "name": "Get All Hotels",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/hotels?city=Bangalore"
+          }
+        },
+        {
+          "name": "Get Hotel By Id",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/hotels/{{hotelId}}"
+          }
+        },
+        {
+          "name": "Create Hotel",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data._id) pm.collectionVariables.set('hotelId', json.data._id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "url": "{{base_url}}/hotels",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Trinity Suites Bangalore\",\n  \"address\": \"1/3, MG Road, Bangalore, Karnataka, India\",\n  \"city\": \"Bangalore\",\n  \"state\": \"Karnataka\",\n  \"description\": \"Boutique serviced suites on MG Road.\",\n  \"amenities\": [\"Air Conditioning\", \"Complimentary Wi-Fi\", \"24-Hour Front Desk\"],\n  \"images\": [],\n  \"rating\": 4.2,\n  \"policies\": [\"Check-in 12:00 PM\", \"Check-out 12:00 PM\"]\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Hotel",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "url": "{{base_url}}/hotels/{{hotelId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 4.5\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Hotel",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "url": "{{base_url}}/hotels/{{hotelId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Rooms",
+      "item": [
+        {
+          "name": "Search Available Rooms",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/rooms/search?checkIn=2026-07-24&checkOut=2026-07-25&guests=2&roomType=Executive Suite&hotel={{hotelId}}"
+          }
+        },
+        {
+          "name": "Get All Rooms",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/rooms?hotel={{hotelId}}"
+          }
+        },
+        {
+          "name": "Get Room By Id",
+          "request": { "method": "GET", "url": "{{base_url}}/rooms/{{roomId}}" }
+        },
+        {
+          "name": "Create Room",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data._id) pm.collectionVariables.set('roomId', json.data._id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "url": "{{base_url}}/rooms",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "hotel", "value": "{{hotelId}}" },
+                { "key": "roomNumber", "value": "101" },
+                { "key": "roomType", "value": "Executive Suite" },
+                { "key": "price", "value": "3600" },
+                { "key": "capacity[adults]", "value": "3" },
+                { "key": "capacity[children]", "value": "1" },
+                {
+                  "key": "description",
+                  "value": "Spacious executive suite with city view."
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Room",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "url": "{{base_url}}/rooms/{{roomId}}",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [{ "key": "price", "value": "3800" }]
+            }
+          }
+        },
+        {
+          "name": "Delete Room",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "url": "{{base_url}}/rooms/{{roomId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Bookings",
+      "item": [
+        {
+          "name": "Create Booking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data._id) pm.collectionVariables.set('bookingId', json.data._id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/bookings",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"hotel\": \"{{hotelId}}\",\n  \"room\": \"{{roomId}}\",\n  \"checkIn\": \"2026-07-24\",\n  \"checkOut\": \"2026-07-25\",\n  \"guests\": { \"adults\": 2, \"children\": 0 },\n  \"guestInfo\": {\n    \"name\": \"Shivam Kumar\",\n    \"email\": \"shivamkmr2211@gmail.com\",\n    \"phone\": \"9876543210\",\n    \"address\": \"123 Street\",\n    \"city\": \"Noida\",\n    \"country\": \"India\"\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "Get My Bookings",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/bookings"
+          }
+        },
+        {
+          "name": "Get Booking By Id",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/bookings/{{bookingId}}"
+          }
+        },
+        {
+          "name": "Update Booking (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "url": "{{base_url}}/bookings/{{bookingId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Confirmed\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Cancel Booking",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/bookings/{{bookingId}}/cancel"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payments",
+      "item": [
+        {
+          "name": "Create Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/payments",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bookingId\": \"{{bookingId}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Payment By Booking",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/payments/{{bookingId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Customers (Admin)",
+      "item": [
+        {
+          "name": "Get All Customers",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "url": "{{base_url}}/customers"
+          }
+        },
+        {
+          "name": "Get Customer By Id",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "url": "{{base_url}}/customers/:id"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard (Admin)",
+      "item": [
+        {
+          "name": "Get Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "url": "{{base_url}}/dashboard"
+          }
+        }
+      ]
+    }
+  ]
+}
