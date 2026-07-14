@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import BookingHeader from "@/components/user/BookingHeader";
 import BookingRoomCard from "@/components/user/BookingRoomCard";
@@ -13,9 +13,15 @@ import GuestInfoForm from "@/components/user/GuestInfoForm";
 import PaymentSection from "@/components/user/PaymentSection";
 import ReservationPolicy from "@/components/user/ReservationPolicy";
 import PropertyTabsContent from "@/components/user/PropertyTabsContent";
-import { useGetBookingDetailsQuery, useCreateBookingMutation } from "@/redux/api/bookingApi";
+import {
+  useGetBookingDetailsQuery,
+  useCreateBookingMutation,
+} from "@/redux/api/bookingApi";
 import { useGetAddOnsQuery } from "@/redux/api/addOnApi";
-import { useCreateOrderMutation, useVerifyPaymentMutation } from "@/redux/api/paymentApi";
+import {
+  useCreateOrderMutation,
+  useVerifyPaymentMutation,
+} from "@/redux/api/paymentApi";
 import { calculateNights, estimatePricing } from "@/lib/pricingEstimate";
 
 const EMPTY_GUEST_INFO = {
@@ -33,7 +39,7 @@ function defaultRoom() {
   return { adults: 1, childrenBelow5: 0, children5to12: 0 };
 }
 
-export default function BookingPage() {
+function BookingPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -42,10 +48,18 @@ export default function BookingPage() {
   // Two-tier date state: "pending" is what the user is editing in the date
   // pickers, "applied" is what's actually sent to the API — only updated
   // when "Check Availability" is clicked, matching the reference UI.
-  const [pendingCheckIn, setPendingCheckIn] = useState(searchParams.get("checkIn") || "");
-  const [pendingCheckOut, setPendingCheckOut] = useState(searchParams.get("checkOut") || "");
-  const [appliedCheckIn, setAppliedCheckIn] = useState(searchParams.get("checkIn") || "");
-  const [appliedCheckOut, setAppliedCheckOut] = useState(searchParams.get("checkOut") || "");
+  const [pendingCheckIn, setPendingCheckIn] = useState(
+    searchParams.get("checkIn") || "",
+  );
+  const [pendingCheckOut, setPendingCheckOut] = useState(
+    searchParams.get("checkOut") || "",
+  );
+  const [appliedCheckIn, setAppliedCheckIn] = useState(
+    searchParams.get("checkIn") || "",
+  );
+  const [appliedCheckOut, setAppliedCheckOut] = useState(
+    searchParams.get("checkOut") || "",
+  );
 
   const [roomsCount, setRoomsCount] = useState(1);
   const [roomsBreakdown, setRoomsBreakdown] = useState([defaultRoom()]);
@@ -69,7 +83,7 @@ export default function BookingPage() {
     error: detailsError,
   } = useGetBookingDetailsQuery(
     { roomId, checkIn: appliedCheckIn, checkOut: appliedCheckOut },
-    { skip: !roomId || !appliedCheckIn || !appliedCheckOut }
+    { skip: !roomId || !appliedCheckIn || !appliedCheckOut },
   );
 
   const { data: addOnsData, isLoading: isAddOnsLoading } = useGetAddOnsQuery();
@@ -83,7 +97,10 @@ export default function BookingPage() {
     setRoomsCount(newCount);
     setRoomsBreakdown((prev) => {
       if (newCount > prev.length) {
-        return [...prev, ...Array.from({ length: newCount - prev.length }, defaultRoom)];
+        return [
+          ...prev,
+          ...Array.from({ length: newCount - prev.length }, defaultRoom),
+        ];
       }
       return prev.slice(0, newCount);
     });
@@ -103,12 +120,15 @@ export default function BookingPage() {
   const totalAdults = roomsBreakdown.reduce((sum, r) => sum + r.adults, 0);
   const totalChildren = roomsBreakdown.reduce(
     (sum, r) => sum + r.childrenBelow5 + r.children5to12,
-    0
+    0,
   );
 
   const selectedAddOns = useMemo(
-    () => (addOnsData?.addOns || []).filter((a) => selectedAddOnIds.includes(a.addOnId)),
-    [addOnsData, selectedAddOnIds]
+    () =>
+      (addOnsData?.addOns || []).filter((a) =>
+        selectedAddOnIds.includes(a.addOnId),
+      ),
+    [addOnsData, selectedAddOnIds],
   );
 
   const pricing = useMemo(
@@ -121,19 +141,33 @@ export default function BookingPage() {
         selectedAddOns,
         promoDiscountAmount: appliedPromo?.discountAmount || 0,
       }),
-    [basePrice, nights, roomsCount, roomsBreakdown, selectedAddOns, appliedPromo]
+    [
+      basePrice,
+      nights,
+      roomsCount,
+      roomsBreakdown,
+      selectedAddOns,
+      appliedPromo,
+    ],
   );
 
   const toggleAddOn = (addOnId) => {
     setSelectedAddOnIds((prev) =>
-      prev.includes(addOnId) ? prev.filter((id) => id !== addOnId) : [...prev, addOnId]
+      prev.includes(addOnId)
+        ? prev.filter((id) => id !== addOnId)
+        : [...prev, addOnId],
     );
   };
 
   const validateBeforeSubmit = () => {
     if (roomsCount < 1) return "Please select at least 1 room.";
     const { firstName, lastName, email, phone } = guestInfo;
-    if (!firstName.trim() || !lastName.trim() || !email.trim() || !phone.trim()) {
+    if (
+      !firstName.trim() ||
+      !lastName.trim() ||
+      !email.trim() ||
+      !phone.trim()
+    ) {
       return "Please fill in all required guest details.";
     }
     return null;
@@ -159,7 +193,10 @@ export default function BookingPage() {
           checkIn: appliedCheckIn,
           checkOut: appliedCheckOut,
           roomsCount,
-          roomsBreakdown: roomsBreakdown.map((r, i) => ({ roomNumber: i + 1, ...r })),
+          roomsBreakdown: roomsBreakdown.map((r, i) => ({
+            roomNumber: i + 1,
+            ...r,
+          })),
           mealPlan,
           addOnIds: selectedAddOnIds,
           promoCode: appliedPromo?.code || "",
@@ -187,7 +224,9 @@ export default function BookingPage() {
 
       router.push(`/booking-confirmation/${bookingId}`);
     } catch (err) {
-      setSubmitError(err?.data?.message || "Something went wrong. Please try again.");
+      setSubmitError(
+        err?.data?.message || "Something went wrong. Please try again.",
+      );
       setIsSubmitting(false);
       setSubmitStage(null);
     }
@@ -196,7 +235,9 @@ export default function BookingPage() {
   if (!roomId) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-cream px-6 text-center">
-        <p className="text-trinity-900/60">No room selected. Please go back and pick a room to book.</p>
+        <p className="text-trinity-900/60">
+          No room selected. Please go back and pick a room to book.
+        </p>
         <button
           type="button"
           onClick={() => router.push("/")}
@@ -225,7 +266,8 @@ export default function BookingPage() {
       {isDetailsError && (
         <div className="mx-auto max-w-3xl px-6 py-16 text-center">
           <p className="text-red-600">
-            {detailsError?.data?.message || "Couldn't load this room's details. Please try again."}
+            {detailsError?.data?.message ||
+              "Couldn't load this room's details. Please try again."}
           </p>
         </div>
       )}
@@ -273,7 +315,12 @@ export default function BookingPage() {
 
               <div className="rounded-2xl bg-white p-2 shadow-sm">
                 <div className="flex flex-wrap gap-2 p-2">
-                  {["Property Info", "Photo Gallery", "Facilities", "Location"].map((tab) => (
+                  {[
+                    "Property Info",
+                    "Photo Gallery",
+                    "Facilities",
+                    "Location",
+                  ].map((tab) => (
                     <button
                       key={tab}
                       type="button"
@@ -311,5 +358,19 @@ export default function BookingPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function BookingPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          Loading...
+        </div>
+      }
+    >
+      <BookingPageContent />
+    </Suspense>
   );
 }
