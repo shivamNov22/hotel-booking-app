@@ -16,6 +16,9 @@ const {
   lookupBookingQuerySchema,
 } = require("../validations/bookingLookupValidation");
 
+const bookingAdminController = require("../controllers/bookingAdminController");
+// const { protect, authorize } = require("../middleware/authMiddleware"); // agar admin-protected chahiye
+
 router.get(
   "/details",
   validate(getBookingDetailsQuerySchema, "query"),
@@ -26,6 +29,13 @@ router.get(
   "/lookup",
   validate(lookupBookingQuerySchema, "query"),
   bookingCreateController.lookupBooking,
+);
+
+// ---- Admin: all bookings  ----
+router.get(
+  "/admin/all",
+
+  bookingAdminController.getAllBookings,
 );
 
 router.post(

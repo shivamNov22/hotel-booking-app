@@ -1,37 +1,42 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-:root {
-  --brand-navy: #0b2e6b;
-  --brand-navy-dark: #081f49;
-  --brand-orange: #f5a623;
-}
+/* Design tokens — migrated from tailwind.config.js (Tailwind v3) to the
+   CSS-first @theme config (Tailwind v4). Values are unchanged; this just
+   moves them so utilities like bg-trinity-500, text-trinity-900/60,
+   bg-cream, bg-cream-card, bg-status-available-bg, etc. keep working
+   exactly as before. */
+@theme {
+  --color-trinity-100: #e4efe7; /* light tint for subtle icon backgrounds */
+  --color-trinity-900: #16281e; /* Sidebar / primary brand green */
+  --color-trinity-800: #1c3527;
+  --color-trinity-700: #204430; /* sidebar background */
+  --color-trinity-600: #265a3b;
+  --color-trinity-500: #2e6b3e; /* primary buttons (Add New Room, Save) */
+  --color-trinity-400: #3f8552;
 
-html {
-  scroll-behavior: smooth;
+  --color-cream: #fbf1e4; /* page background */
+  --color-cream-card: #fdf7ee;
+
+  --color-status-available-bg: #dcefe0;
+  --color-status-available-text: #1f7a3d;
+  --color-status-occupied-bg: #fce7d0;
+  --color-status-occupied-text: #b15c00;
+  --color-status-maintenance-bg: #fcefc0;
+  --color-status-maintenance-text: #8a6d00;
+
+  --font-sans: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 body {
-  color: #1f2937;
-  background-color: #eef1f6;
+  background-color: #fbf1e4;
 }
 
-/* Visible keyboard focus for accessibility */
-a:focus-visible,
-button:focus-visible,
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible {
-  outline: 2px solid var(--brand-orange);
-  outline-offset: 2px;
+/* Custom scrollbar to match the clean admin look */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
-
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
-    scroll-behavior: auto !important;
-  }
+::-webkit-scrollbar-thumb {
+  background-color: #cfead6;
+  border-radius: 9999px;
 }
