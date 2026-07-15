@@ -1,7 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+"use client";
+
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+
 import BookingHeader from "@/components/user/BookingHeader";
 import BookingRoomCard from "@/components/user/BookingRoomCard";
 import BookingPageSkeleton from "@/components/user/BookingPageSkeleton";
@@ -39,7 +42,7 @@ function defaultRoom() {
   return { adults: 1, childrenBelow5: 0, children5to12: 0 };
 }
 
-export default function BookingPage() {
+function BookingPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -355,5 +358,19 @@ export default function BookingPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function BookingPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-cream">
+          <BookingPageSkeleton />
+        </div>
+      }
+    >
+      <BookingPageContent />
+    </Suspense>
   );
 }
