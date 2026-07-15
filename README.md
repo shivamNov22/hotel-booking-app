@@ -16,6 +16,10 @@ Backend API
 
 https://hotel-booking-app-backend-q0qj.onrender.com
 
+Admin ID & Password:
+shivam@gmail.com
+Password@123
+
 GitHub Repository
 
 https://github.com/shivamNov22/hotel-booking-app
