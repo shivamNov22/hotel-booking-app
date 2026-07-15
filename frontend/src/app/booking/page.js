@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import BookingHeader from "@/components/user/BookingHeader";
 import BookingRoomCard from "@/components/user/BookingRoomCard";
@@ -39,15 +39,12 @@ function defaultRoom() {
   return { adults: 1, childrenBelow5: 0, children5to12: 0 };
 }
 
-function BookingPageContent() {
+export default function BookingPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const roomId = searchParams.get("roomId");
 
-  // Two-tier date state: "pending" is what the user is editing in the date
-  // pickers, "applied" is what's actually sent to the API — only updated
-  // when "Check Availability" is clicked, matching the reference UI.
   const [pendingCheckIn, setPendingCheckIn] = useState(
     searchParams.get("checkIn") || "",
   );
@@ -358,19 +355,5 @@ function BookingPageContent() {
         </div>
       )}
     </div>
-  );
-}
-
-export default function BookingPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen flex items-center justify-center">
-          Loading...
-        </div>
-      }
-    >
-      <BookingPageContent />
-    </Suspense>
   );
 }

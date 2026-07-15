@@ -2,10 +2,17 @@
 
 import { useState } from "react";
 import { ChevronDown, User } from "lucide-react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Topbar({ title }) {
   const [open, setOpen] = useState(false);
+  const router = useRouter();
+
+  const handleLogout = () => {
+    setOpen(false);
+
+    router.push("/");
+  };
 
   return (
     <header className="flex items-center justify-between px-8 py-6">
@@ -36,13 +43,13 @@ export default function Topbar({ title }) {
             >
               My Profile
             </button>
-
-            <Link
-              href="/"
+            <button
+              type="button"
               className="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-cream"
+              onClick={handleLogout}
             >
               Logout
-            </Link>
+            </button>
           </div>
         )}
       </div>

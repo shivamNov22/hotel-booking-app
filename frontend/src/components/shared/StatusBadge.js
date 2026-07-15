@@ -3,6 +3,10 @@ const STYLES = {
   Occupied: "bg-status-occupied-bg text-status-occupied-text",
   Maintenance: "bg-status-maintenance-bg text-status-maintenance-text",
   Confirmed: "bg-status-available-bg text-status-available-text",
+  Paid: "bg-status-available-bg text-status-available-text",
+  Pending: "bg-status-maintenance-bg text-status-maintenance-text",
+  Cancelled: "bg-status-occupied-bg text-status-occupied-text",
+  Failed: "bg-status-occupied-bg text-status-occupied-text",
 };
 
 export default function StatusBadge({ status }) {

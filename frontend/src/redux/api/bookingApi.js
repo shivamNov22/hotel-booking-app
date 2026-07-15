@@ -24,12 +24,28 @@ export const bookingApi = apiSlice.injectEndpoints({
       query: (bookingId) => `/bookings/${bookingId}`,
     }),
 
-    // GET /api/bookings/lookup?bookingId=&email= — "My Bookings" search (not built into UI yet)
+    // GET /api/bookings/lookup?bookingId=&email= — "My Bookings" search
     lookupBooking: builder.query({
       query: ({ bookingId, email }) => ({
         url: "/bookings/lookup",
         params: { bookingId, email },
       }),
+    }),
+
+    // GET /api/bookings/admin/all?status=&page=&limit= — Admin > Bookings table
+    // response: { success, total, page, pages, count, statusCounts: [{_id, count}], bookings: [...] }
+    getAdminBookings: builder.query({
+      query: (params = {}) => ({
+        url: "/bookings/admin/all",
+        params, // { status, page, limit }
+      }),
+      providesTags: (result) =>
+        result?.bookings
+          ? [
+              ...result.bookings.map((b) => ({ type: "Booking", id: b.bookingId })),
+              { type: "Booking", id: "LIST" },
+            ]
+          : [{ type: "Booking", id: "LIST" }],
     }),
   }),
   overrideExisting: false,
@@ -41,4 +57,5 @@ export const {
   useCreateBookingMutation,
   useGetBookingConfirmationQuery,
   useLazyLookupBookingQuery,
+  useGetAdminBookingsQuery,
 } = bookingApi;

@@ -1,15 +1,12 @@
 "use client";
 
-import { TrendingUp, PieChart as PieIcon } from "lucide-react";
+import { TrendingUp, PieChart as PieIcon, IndianRupee } from "lucide-react";
 import Link from "next/link";
 import Topbar from "@/components/admin/Topbar";
 import StatCard from "@/components/admin/StatCard";
 import StatusBadge from "@/components/shared/StatusBadge";
 import { useGetRoomsQuery } from "@/redux/api/roomApi";
-
-const MOCK_TOTAL_BOOKINGS = 120;
-const MOCK_TOTAL_CUSTOMERS = 80;
-const MOCK_TOTAL_REVENUE = "1,45,000";
+import { useGetAdminBookingsQuery } from "@/redux/api/bookingApi";
 
 export default function DashboardPage() {
   const { data: allRoomsData } = useGetRoomsQuery({ limit: 1 });
@@ -22,23 +19,39 @@ export default function DashboardPage() {
   const { data: previewRoomsData, isLoading: isRoomsLoading } =
     useGetRoomsQuery({ limit: 5 });
 
+  const { data: bookingsData, isLoading: isBookingsLoading } =
+    useGetAdminBookingsQuery({ limit: 200 });
+
   const totalRooms = allRoomsData?.pagination?.totalRooms ?? "—";
   const availableRooms = availableRoomsData?.pagination?.totalRooms ?? "—";
+
+  const totalBookings = bookingsData?.total ?? "—";
+  const totalRevenue =
+    bookingsData?.bookings?.reduce(
+      (sum, b) => sum + (b.pricingBreakdown?.grandTotal ?? 0),
+      0,
+    ) ?? 0;
 
   return (
     <div className="pb-10">
       <Topbar title="Admin Dashboard Overview" />
 
       <div className="space-y-6 px-8">
-        {/* Stat cards row */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard
             label="Total Bookings"
-            value={MOCK_TOTAL_BOOKINGS}
+            value={isBookingsLoading ? "—" : totalBookings}
             trendIcon={TrendingUp}
           />
-          <StatCard label="Total Customers" value={MOCK_TOTAL_CUSTOMERS} />
-          <StatCard label="Total Revenue" value={`₹ ${MOCK_TOTAL_REVENUE}`} />
+          <StatCard
+            label="Total Revenue"
+            value={
+              isBookingsLoading
+                ? "—"
+                : `₹ ${totalRevenue.toLocaleString("en-IN")}`
+            }
+            trendIcon={IndianRupee}
+          />
           <StatCard label="Total Rooms" value={totalRooms} />
           <StatCard
             label="Available Rooms"
@@ -91,6 +104,7 @@ export default function DashboardPage() {
                   <td className="px-6 py-4">{room.roomName}</td>
                   <td className="px-6 py-4">
                     {room.image ? (
+                      // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={room.image}
                         alt={room.roomName}

@@ -18,18 +18,11 @@ const TRUST_BADGES = [
   },
 ];
 
-export default function ReservationSummary({
-  checkIn,
-  checkOut,
-  nights,
-  pricing,
-}) {
+export default function ReservationSummary({ checkIn, checkOut, nights, pricing }) {
   return (
     <div className="space-y-4">
       <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
-        <h2 className="bg-trinity-700 px-5 py-3 text-sm font-semibold text-white">
-          Reservation Summary
-        </h2>
+        <h2 className="bg-trinity-700 px-5 py-3 text-sm font-semibold text-white">Reservation Summary</h2>
         <div className="space-y-4 p-5">
           <div className="flex items-start justify-between">
             <div>
@@ -70,22 +63,16 @@ export default function ReservationSummary({
 
           <div className="flex items-center justify-between rounded-lg bg-trinity-700 px-4 py-3 text-white">
             <span className="font-semibold">Grand Total</span>
-            <span className="text-lg font-bold">
-              ₹{pricing.grandTotal.toLocaleString("en-IN")}
-            </span>
+            <span className="text-lg font-bold">₹{pricing.grandTotal.toLocaleString("en-IN")}</span>
           </div>
           <p className="text-center text-[11px] text-trinity-900/40">
-            Estimated total — the confirmed amount is calculated by the server
-            when you submit your booking.
+            Estimated total — the confirmed amount is calculated by the server when you submit your booking.
           </p>
         </div>
       </div>
 
       {TRUST_BADGES.map(({ icon: Icon, title, text }) => (
-        <div
-          key={title}
-          className="flex items-start gap-3 rounded-2xl bg-white p-4 shadow-sm"
-        >
+        <div key={title} className="flex items-start gap-3 rounded-2xl bg-white p-4 shadow-sm">
           <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-trinity-100 text-trinity-600">
             <Icon size={18} />
           </span>

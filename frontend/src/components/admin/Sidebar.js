@@ -6,21 +6,25 @@ import {
   LayoutDashboard,
   BedDouble,
   CalendarCheck,
-  Users,
   Settings,
   LogOut,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const NAV_ITEMS = [
   { label: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
   { label: "Rooms (CRUD)", href: "/admin/rooms", icon: BedDouble },
   { label: "Bookings", href: "/admin/bookings", icon: CalendarCheck },
-  { label: "Customers", href: "/admin/customers", icon: Users },
   { label: "Settings", href: "/admin/settings", icon: Settings },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    router.push("/");
+  };
 
   return (
     <aside className="flex h-screen w-64 flex-shrink-0 flex-col justify-between bg-trinity-700 text-white">
@@ -58,14 +62,14 @@ export default function Sidebar() {
         </nav>
       </div>
 
-      <Link
-        href="/"
+      <button
         type="button"
         className="mx-6 mb-6 flex items-center gap-2 text-sm text-white/70 hover:text-white transition-colors"
+        onClick={handleLogout}
       >
         <LogOut size={16} />
         Logout
-      </Link>
+      </button>
     </aside>
   );
 }
